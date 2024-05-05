@@ -83,6 +83,21 @@ function ShowRecord(){
     </div>
   )
 }
+
+const Home = () => {
+  const router = useRouter();
+
+  const handleRedirect = () => {
+    router.push('/attendance');
+  };
+
+  return (
+    <div>
+      <button onClick={handleRedirect}>Go to Attendance</button>
+    </div>
+  );
+};
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
