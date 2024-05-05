@@ -84,39 +84,33 @@ function ShowRecord(){
   )
 }
 
-const Home = () => {
+export default function Home() {
   const router = useRouter();
 
   const handleRedirect = () => {
-    router.push('/attendance');
+    router.push('./attendance.js');
   };
 
   return (
-    <div>
+    <><div>
       <button onClick={handleRedirect}>Go to Attendance</button>
-    </div>
-  );
-};
-
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <table className ="table-auto border-separate border-spacing-x-5">
-  <thead>
-    <tr>
-      <th>School Number</th>
-      <th>Name</th>
-      <th>Class</th>
-      <th>Marks</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  <Authentication/>
-  </tbody>
-</table>
-<ShowRecord/>
-    </main>
+    </div><main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <table className="table-auto border-separate border-spacing-x-5">
+          <thead>
+            <tr>
+              <th>School Number</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Marks</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <Authentication />
+          </tbody>
+        </table>
+        <ShowRecord />
+      </main></>
   );
 }
