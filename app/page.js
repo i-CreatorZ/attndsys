@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import React, { useState } from 'react';
 
 const GuestType = 'User'
 const details = [{
@@ -88,7 +89,7 @@ export default function Home() {
   const router = useRouter();
 
   const handleRedirect = () => {
-    router.push('./attendance.js');
+    router.push('/Attendance');
   };
 
   return (
