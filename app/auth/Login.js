@@ -1,27 +1,30 @@
 "use client"
 import { useState } from "react"
-import {supabase} from "../supabaseClient"
+import { supabase } from "../supabase.js"
 export default function Login() {
     async function signInWithEmail() {
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: 'example@email.com',
-          password: 'example-password',
+            email: email,
+            password: password,
         })
-      }
+    }
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    const  handleChange = (event) => {
+		setEmail(event.target.value);
+        setPassword(event.target.value);
+	};
     return (
         <div>
-            <div>
-                <h1>Sign In</h1>
-                <form>
-                    <label htmlFor="email">Email</label>
-                    <input type="email" id="email" />
-                    <label htmlFor="password">Password</label>
-                    <input type="password" id="password" />
-                    <button type="submit">Sign In</button>
-                </form>
-            </div>
+            <form>
+                <label>Input Value:
+                    <input type="text" value={setEmail} onChange={handleChange} />
+                    <input type="text" value={setPassword} onChange={handleChange} />
+                </label>
+                <p>Input Value: {email}</p>
+            </form>
         </div>
+
     );
 }
