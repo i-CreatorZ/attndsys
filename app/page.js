@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react';
-import Login from './auth/Login';
+import Login from './auth/page';
 
 const GuestType = 'User'
 const details = [{
@@ -95,7 +95,9 @@ export default function Home() {
 
   var session = false;
   if (!session) {
+    return(
     <Login />
+  )
   } else {
     return (
       <><div>
@@ -120,5 +122,4 @@ export default function Home() {
         </main></>
     );
   }
-
 }
