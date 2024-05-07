@@ -38,22 +38,38 @@ import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [id, setid] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const { user, error } = await supabase.auth.signIn({ email, password });
-      if (error) {
-        throw error;
-      }
-      // Redirect user to dashboard or any other page after successful login
-      router.push('/attendance');
-    } catch (error) {
-      console.error('Login error:', error.message);
-      // Handle login error
+  try{
+    const { data, error } = await supabase
+      .from("member_info")
+      .select('id,  password')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      throw error;
     }
+
+    // If user not found
+    if (!data) {
+      throw new Error('User not found');
+    }
+
+    // Compare passwords
+    if (data.password === password) {
+      // Passwords match, redirect to home page
+      router.push('/home'); // Adjust the route as per your setup
+    } else {
+      throw new Error('Invalid password');
+    }
+  } catch (error) {
+    console.error('Login error:', error.message);
+    // Handle login error (e.g., display error message)
+  }
   };
 
   return (
@@ -61,12 +77,11 @@ export default function Login() {
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="id">ID:</label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="id"
+            value={id}
+            onChange={(e) => setid(e.target.value)}
             required
           />
         </div>
