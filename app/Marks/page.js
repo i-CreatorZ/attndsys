@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react';
 import Login from '../auth/page';
-import supabase from '../meritDemeritSupabase'
+import supabase from '../supabase'
 const GuestType = 'User'
 const details = [{
   id: "D6661",
@@ -87,8 +87,8 @@ function ShowRecord() {
 }
 
 export default function Home() {
-  const router = useRouter();
   console.log(supabase)
+  const router = useRouter();
   const handleRedirect = () => {
     router.push('/Attendance');
   };
