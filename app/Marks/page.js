@@ -1,7 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react';
-import Login from '../auth/page';
 import supabase from '../supabase'
 const GuestType = 'User'
 const details = [{
@@ -93,12 +92,12 @@ export default function Home() {
     router.push('/Attendance');
   };
 
-  var session = true;
+  /*var session = true;
   if (!session) {
     return(
     <Login />
   )
-  } else {
+  } else {*/
     return (
       <><div>
         <button onClick={handleRedirect}>Go to Attendance</button>
@@ -120,6 +119,6 @@ export default function Home() {
           </table>
           <ShowRecord />
         </main></>
-    );
+    )
   }
-}
+
