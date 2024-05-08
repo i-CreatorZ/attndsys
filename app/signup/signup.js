@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react";
 import { supabase } from "../supabase.js";
 
 export default function signup() {
@@ -6,13 +7,14 @@ export default function signup() {
         const [id, setid] = useState('');
         const [password, setPassword] = useState('');
         const [name, setName] = useState('');
+        const [kelas, setKelas] = useState('')
       
         const handleLogin = async (e) => {
           e.preventDefault();
         try{
           const { data, error } = await supabase
             .from("member_info")
-            .insert({ id: id, name: name, class: class})
+            .insert({ id: {id}, name: {name}, class: {kelas}})
       
           if (error) {
             throw error;
