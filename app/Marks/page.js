@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react';
-import supabase from '../supabase'
+import React, { useEffect, useState } from 'react';
+import {supabase} from '../supabase.js'
 const GuestType = 'User'
 const details = [{
   id: "D6661",
@@ -15,13 +15,13 @@ const details = [{
   Class: "2SK1",
   Marks: "10",
 }]
+const Member = details.filter(person =>
+  person.id === "D6661"
+)[0]
 
 function Authentication() {
   const router = useRouter()
   if (GuestType === 'User') {
-    const Member = details.filter(person =>
-      person.id === "D6661"
-    )[0]
     return (
       <tr key={Member.id} >
         <td>{Member.id}</td>
@@ -47,8 +47,51 @@ function Authentication() {
     )
   }
 }
+function DemeritRecords() {
+  const [records, setRecords] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('demerit_records')
+          .select()
+          .eq('id', Member.id);
+
+        if (error) {
+          console.error("Error fetching records:", error);
+          setFetchError(error);
+        } 
+        else if (data) {
+          setRecords(data);
+        }
+      } 
+      catch (error) {
+        console.error("Error fetching records:", error);
+        setFetchError(error.message);
+      }
+    };
+
+    fetchRecords();
+  }, [Member]);
+  //console.log(53)
+  return (
+    //{fetchError && <div>Error: {fetchError.message}</div>}
+    {records.map(record => (
+      <tr key={record.id}>
+        <td>{record.date}</td>
+        <td>{record.reason}</td>
+        <td>{record.marks}</td>
+      </tr>
+    ))
+    }
+  )
+}
+
 
 function ShowRecord() {
+
   return (
     GuestType === 'User' &&
     <div>
@@ -62,9 +105,7 @@ function ShowRecord() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th></th>
-          </tr>
+        <DemeritRecords/>
         </tbody>
       </table>
       <h2 className="flex justify-center mt-10">Merit Records</h2>
@@ -91,13 +132,6 @@ export default function Home() {
   const handleRedirect = () => {
     router.push('/Attendance');
   };
-
-  /*var session = true;
-  if (!session) {
-    return(
-    <Login />
-  )
-  } else {*/
     return (
       <><div>
         <button onClick={handleRedirect}>Go to Attendance</button>
@@ -121,4 +155,3 @@ export default function Home() {
         </main></>
     )
   }
-
