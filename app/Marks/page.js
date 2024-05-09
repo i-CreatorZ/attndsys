@@ -47,45 +47,39 @@ function Authentication() {
     )
   }
 }
-function DemeritRecords() {
+function Records({database}) {
   const [records, setRecords] = useState([]);
   const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
     const fetchRecords = async () => {
-      try {
         const { data, error } = await supabase
-          .from('demerit_records')
+          .from(database)
           .select()
-          .eq('id', Member.id);
+          .eq('school_num', Member.id);
 
         if (error) {
           console.error("Error fetching records:", error);
           setFetchError(error);
+          setRecords(null)
         } 
         else if (data) {
           setRecords(data);
+          setFetchError(null)
         }
       } 
-      catch (error) {
-        console.error("Error fetching records:", error);
-        setFetchError(error.message);
-      }
-    };
-
-    fetchRecords();
-  }, [Member]);
-  //console.log(53)
+      fetchRecords();
+    })
+   ,[Member];
+const recordList = records.map(record => 
+  <tr key={record.id}>
+    <td>{record.date}</td>
+    <td>{record.reason}</td>
+    <td>{record.mark}</td>
+  </tr>
+)
   return (
-    //{fetchError && <div>Error: {fetchError.message}</div>}
-    {records.map(record => (
-      <tr key={record.id}>
-        <td>{record.date}</td>
-        <td>{record.reason}</td>
-        <td>{record.marks}</td>
-      </tr>
-    ))
-    }
+    recordList
   )
 }
 
@@ -105,7 +99,7 @@ function ShowRecord() {
           </tr>
         </thead>
         <tbody>
-        <DemeritRecords/>
+        <Records database = "demerit_records"></Records>
         </tbody>
       </table>
       <h2 className="flex justify-center mt-10">Merit Records</h2>
@@ -120,6 +114,7 @@ function ShowRecord() {
           </tr>
         </thead>
         <tbody>
+          <Records database= "merit_records"></Records>
         </tbody>
       </table>
     </div>
