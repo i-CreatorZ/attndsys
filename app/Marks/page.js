@@ -15,7 +15,7 @@ const details = [{
   Class: "2SK1",
   Marks: "10",
 }]
-const Member = details.filter(person =>
+export const Member = details.filter(person =>
   person.id === "D6661"
 )[0]
 
