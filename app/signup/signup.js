@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { supabase } from "../supabase.js";
 
-export default function signup() {
+export default function Signup() {
         const router = useRouter();
         const [id, setid] = useState('');
         const [password, setPassword] = useState('');
