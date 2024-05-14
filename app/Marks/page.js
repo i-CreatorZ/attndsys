@@ -1,51 +1,79 @@
 'use client'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react';
 import {supabase} from '../supabase.js'
-const GuestType = 'User'
-const details = [{
-  id: "D6661",
-  Name: "Chang Hua keat",
-  Class: "2SK1",
-  Marks: "100",
-},
-{
-  id: "D6666",
-  Name: "Chang Hua keat",
-  Class: "2SK1",
-  Marks: "10",
-}]
-export const Member = details.filter(person =>
-  person.id === "D6661"
-)[0]
-
+import {useRouter} from 'next/navigation'
+const GuestType = 'Admin'
+const schoolNum = "D5001"
 function Authentication() {
-  const router = useRouter()
-  if (GuestType === 'User') {
-    return (
-      <tr key={Member.id} >
-        <td>{Member.id}</td>
-        <td>{Member.Name}</td>
-        <td>{Member.Class}</td>
-        <td>{Member.Marks}</td>
-      </tr>
-    );
-  }
-  else {
-    const detailsList = details.map(person =>
-      <tr key={person.id}>
-        <td>{person.id}</td>
-        <td>{person.Name}</td>
-        <td>{person.Class}</td>
-        <td>{person.Marks}</td>
-        <td><button onClick={() => router.push('/Merit')}>Merit</button></td>
-        <td><button onClick={() => router.push('/Demerit')}>Demerit</button></td>
-      </tr>
-    )
-    return (
-      detailsList
-    )
-  }
+  const [member_Details ,setDetails]  = useState([])
+
+if (GuestType === 'User') {
+  useEffect(() =>{
+    const fetchMemberData = async ()=>{
+      const {data, error} = await supabase
+        .from("member_info")
+        .select()
+        .eq("id", schoolNum)
+        .single()
+      if (error){
+        console.log("Member marks error: " + error)
+      }
+      else if(data){
+        setDetails(data)
+      }
+    }
+    fetchMemberData()
+  })
+  return (
+    <tr key= {member_Details.id} >
+      <td>{member_Details.id}</td>
+      <td>{member_Details.name}</td>
+      <td>{member_Details.class}</td>
+      <td>{member_Details.merit}</td>
+    </tr>
+  );
+}
+else {
+  useEffect(() =>{
+    const fetchAllMemberData = async ()=>{
+      const {data, error} = await supabase
+        .from("member_info")
+        .select()
+  
+      if (error){
+        console.log("Member marks error: " + error)
+      }
+      else if(data){
+        setDetails(data)
+      }
+    }
+    fetchAllMemberData()
+  }),[]
+  const detailsList = member_Details.map(person =>
+    <tr key={person.id}>
+      <td>{person.id}</td>
+      <td>{person.name}</td>
+      <td>{person.class}</td>
+      <td>{person.merit}</td>
+      <td><Link
+      href = {{
+        pathname:'/Merit',
+        query:{id:person.id, name: person.name}
+      }}
+      >Merit</Link></td>
+      <td><Link
+      href = {{
+        pathname:'/Demerit',
+        query:{id:person.id, name: person.name}
+      }}
+      >Demerit</Link></td>
+    </tr>
+  )
+  return (
+    detailsList
+  )
+}
 }
 function Records({database}) {
   const [records, setRecords] = useState([]);
@@ -56,7 +84,7 @@ function Records({database}) {
         const { data, error } = await supabase
           .from(database)
           .select()
-          .eq('school_num', Member.id);
+          .eq('school_num', schoolNum);
 
         if (error) {
           console.error("Error fetching records:", error);
@@ -70,7 +98,7 @@ function Records({database}) {
       } 
       fetchRecords();
     })
-   ,[Member];
+   ,[schoolNum];
 const recordList = records.map(record => 
   <tr key={record.id}>
     <td>{record.date}</td>
@@ -123,7 +151,7 @@ function ShowRecord() {
 
 export default function Home() {
   console.log(supabase)
-  const router = useRouter();
+  const router = useRouter()
   const handleRedirect = () => {
     router.push('/Attendance');
   };

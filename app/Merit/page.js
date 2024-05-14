@@ -1,33 +1,61 @@
 
 "use client"
 import React, { useInsertionEffect, useState } from 'react';
-import {Member} from '../Marks/page.js'
+import { useRouter } from 'next/navigation'
 import {supabase} from '../supabase.js'
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link'
 
-export function Form({database, type, type2,type3}) {
+export function Form({database, type, type2}) {
     const [com_name, setName] = useState('')
     const [mark,setMarks] = useState(0)
     const [reason,setReason] = useState('')
     const [date,setdate] = useState(new Date())
     const [submit, setSubmit] = useState(false)
-
-    const handleSubmit = async  (e) =>{
+    const searchParams = useSearchParams()
+    const id = searchParams.get('id')
+    const name = searchParams.get('name')
+    console.log("id: " + id + " name: " + name)
+    const handleSubmit = async (e) =>{
       e.preventDefault()
-      const name = Member.Name
-      const school_num = Member.id
 
       const { data, error } = await supabase
       .from(database)
       .insert([
-        { school_num: school_num, name: name, date: date, reason: reason, mark:mark, com_name: com_name },
+        { school_num: id, name: name, date: date, reason: reason, mark:mark, com_name: com_name },
       ])
-      
+      .select()
         if (error){
           console.log("Error: " + error)
         }
         else if (data){
           setSubmit(true)
         }
+        /*
+        Code that needs to be debugged
+        const {data2, error2} = await supabase
+          .from("member_info")
+          .select('merit')
+          .eq("id",id)
+          .single()
+          console.log("data2" + data2)
+        if (data2){
+          const originalMark = data2
+          console.log("original mark: " + originalMark)
+          const {data3, error3} = await supabase
+            .from("member_info")
+            .update('merit', originalMark - mark)
+            .eq("id", id)
+            .select()
+          if (error3){
+            console.log("Error 3: " + error3)
+          }
+        }
+        else if (error2){
+          console.log("Error 2: " + error2)
+        }*/
+
+
     }
     return( submit ? 
       <>
