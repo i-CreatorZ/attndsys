@@ -16,6 +16,7 @@ export function Form({database, type, type2,type3}) {
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
     const name = searchParams.get('name')
+    const router = useRouter()
     console.log("id: " + id + " name: " + name)
     const handleSubmit = async (e) =>{
       e.preventDefault()
@@ -62,7 +63,7 @@ export function Form({database, type, type2,type3}) {
     return( submit ? 
       <>
       <h3>Form submitted</h3>
-      <button onClick = {() => setSubmit(false)}>return to page</button>
+      <button onClick = {() => router.push("/Marks")}> return to page</button>
       </>
     :
     <form onSubmit = {handleSubmit}>
