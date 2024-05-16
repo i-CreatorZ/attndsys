@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import {supabase} from '../supabase.js'
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link'
+import { markAssetError } from 'next/dist/client/route-loader.js';
 
-export function Form({database, type, type2}) {
+export function Form({database, type, type2,type3}) {
     const [com_name, setName] = useState('')
     const [mark,setMarks] = useState(0)
     const [reason,setReason] = useState('')
@@ -30,21 +31,21 @@ export function Form({database, type, type2}) {
         }
         else if (data){
           setSubmit(true)
-        }
-        /*
-        Code that needs to be debugged
-        const {data2, error2} = await supabase
+          const {data: data2, error: error2} = await supabase
           .from("member_info")
-          .select('merit')
+          .select("merit")
           .eq("id",id)
           .single()
-          console.log("data2" + data2)
+          //console.log("data2" + data2 + " id: " + id)
         if (data2){
-          const originalMark = data2
-          console.log("original mark: " + originalMark)
-          const {data3, error3} = await supabase
+          const originalMark = data2.merit
+          console.log("originalMark: " + typeof originalMark + " mark: " + typeof mark)
+          let newMark = 0;
+          {type3 === "+" ? newMark = (originalMark + mark): newMark = originalMark - mark}
+          //console.log("original mark: " + originalMark)
+          const {data:data3, data:error3} = await supabase
             .from("member_info")
-            .update('merit', originalMark - mark)
+            .update({'merit': newMark})
             .eq("id", id)
             .select()
           if (error3){
@@ -53,7 +54,8 @@ export function Form({database, type, type2}) {
         }
         else if (error2){
           console.log("Error 2: " + error2)
-        }*/
+        }
+        }
 
 
     }
@@ -120,8 +122,7 @@ export function Form({database, type, type2}) {
                   required 
                   min = "0"
                   max = "100"
-                  onChange = {(e) => setMarks(e.target.value)}
-                  value = {mark}
+                  onChange = {(e) => setMarks(+(e.target.value))}
                 />
               </div>
             </div>
@@ -140,5 +141,5 @@ export function Form({database, type, type2}) {
     )}
 
   export default function Layout(){
-    return(<Form database = "merit_records" type = "Merit" type2 = "Added"></Form>)
+    return(<Form database = "merit_records" type = "Merit" type2 = "Added" type3 = "+"></Form>)
   }

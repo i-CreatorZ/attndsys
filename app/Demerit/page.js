@@ -5,5 +5,5 @@ import {supabase} from '../supabase.js'
 import {Form} from '../Merit/page.js'
 
 export default function Layout(){
-  return(<Form database = 'demerit_records' type = "Demerit" type2 = "Deducted" type3 = "Demerit"></Form>)
+  return(<Form database = 'demerit_records' type = "Demerit" type2 = "Deducted" type3 = "-"></Form>)
 }
