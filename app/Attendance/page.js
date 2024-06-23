@@ -1,17 +1,43 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabase';
+import './Attendance.css'; // Import the CSS file
 
 const Attendance = () => {
-  const [students, setStudents] = useState([
-    { id: 1, name: 'Ernest ', class: '1a', present: false },
-    { id: 2, name: 'Unknown', class: '1b', present: false },
-    // Add more students as needed
-  ]);
+  const [students, setStudents] = useState([]);
 
-  const handleAttendance = (id) => {
-    setStudents(students.map(student =>
+  useEffect(() => {
+    const fetchStudents = async () => {
+      const { data, error } = await supabase
+        .from('member_info')
+        .select('id, name, class, present');
+
+      if (error) {
+        console.error('Error fetching students:', error);
+      } else {
+        setStudents(data);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  const handleAttendance = async (id) => {
+    const updatedStudents = students.map(student =>
       student.id === id ? { ...student, present: !student.present } : student
-    ));
+    );
+    setStudents(updatedStudents);
+
+    const studentToUpdate = updatedStudents.find(student => student.id === id);
+
+    const { data, error } = await supabase
+      .from('member_info')
+      .update({ present: studentToUpdate.present })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating attendance:', error);
+    }
   };
 
   return (
