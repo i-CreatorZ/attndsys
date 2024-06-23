@@ -151,14 +151,8 @@ function ShowRecord() {
 
 export default function Home() {
   console.log(supabase)
-  const router = useRouter()
-  const handleRedirect = () => {
-    router.push('/Attendance');
-  };
     return (
-      <><div>
-        <button onClick={handleRedirect}>Go to Attendance</button>
-      </div><main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <><main className="flex min-h-screen flex-col items-center justify-between p-24">
           <table className="table-auto border-separate border-spacing-x-5">
             <thead>
               <tr>
