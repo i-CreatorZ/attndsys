@@ -12,16 +12,19 @@ const AttendanceManagement = () => {
 
   useEffect(() => {
     const ensureAttendanceTableExists = async () => {
+      const tableName = `attendance_${date.replace(/-/g, '_')}`;
+
+      // Check if the table exists
       const { data: tableExists, error: tableExistsError } = await supabase
         .from('information_schema.tables')
         .select('table_name')
-        .eq('table_name', 'attendance')
+        .eq('table_name', tableName)
         .single();
 
       if (tableExistsError || !tableExists) {
         // Table does not exist, so create it
         const createTableQuery = `
-          CREATE TABLE IF NOT EXISTS attendance (
+          CREATE TABLE IF NOT EXISTS ${tableName} (
             id text PRIMARY KEY,
             date date NOT NULL,
             present boolean NOT NULL,
@@ -37,10 +40,10 @@ const AttendanceManagement = () => {
       }
 
       // Table exists or has been created, proceed to fetch students and attendance data
-      fetchStudents();
+      fetchStudents(tableName);
     };
 
-    const fetchStudents = async () => {
+    const fetchStudents = async (tableName) => {
       const { data, error } = await supabase
         .from('member_info')
         .select('id, name, class');
@@ -49,7 +52,7 @@ const AttendanceManagement = () => {
         console.error('Error fetching students:', error);
       } else {
         const attendanceData = await supabase
-          .from('attendance')
+          .from(tableName)
           .select('id, present')
           .eq('date', date);
 
@@ -76,6 +79,7 @@ const AttendanceManagement = () => {
   };
 
   const handleSave = async () => {
+    const tableName = `attendance_${date.replace(/-/g, '_')}`;
     const attendanceRecords = students.map(student => ({
       id: student.id,
       date,
@@ -83,7 +87,7 @@ const AttendanceManagement = () => {
     }));
 
     const { data, error } = await supabase
-      .from('attendance')
+      .from(tableName)
       .upsert(attendanceRecords, { onConflict: ['id', 'date'] });
 
     if (error) {
