@@ -1,22 +1,17 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import './Attendance.css'; // Import the CSS file
 
 const AttendanceManagement = () => {
   const { date } = useParams();
+  const navigate = useNavigate();
   const [students, setStudents] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'asc' });
 
   useEffect(() => {
     const ensureAttendanceTableExists = async () => {
-      // Check if the attendance table exists
-      const { data, error } = await supabase.rpc('current_role');
-    if (error) {
-        console.error('Error fetching current role:', error);
-    } else {
-        console.log('Current Role:', data);
-    }
       const { data: tableExists, error: tableExistsError } = await supabase
         .from('information_schema.tables')
         .select('table_name')
@@ -95,23 +90,43 @@ const AttendanceManagement = () => {
       console.error('Error saving attendance:', error);
     } else {
       alert('Attendance saved successfully!');
+      navigate(-1); // Go back to the previous page
     }
   };
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedStudents = [...students].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+
   return (
-    <div>
+    <div className="container">
       <h1>Manage Attendance for {date}</h1>
+      <button onClick={() => navigate(-1)}>Back</button> {/* Back button */}
       <table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Class</th>
-            <th>Present</th>
+            <th onClick={() => handleSort('id')} className={`sortable ${sortConfig.key === 'id' ? `sort-${sortConfig.direction}` : ''}`}>ID</th>
+            <th onClick={() => handleSort('name')} className={`sortable ${sortConfig.key === 'name' ? `sort-${sortConfig.direction}` : ''}`}>Name</th>
+            <th onClick={() => handleSort('class')} className={`sortable ${sortConfig.key === 'class' ? `sort-${sortConfig.direction}` : ''}`}>Class</th>
+            <th onClick={() => handleSort('present')} className={`sortable ${sortConfig.key === 'present' ? `sort-${sortConfig.direction}` : ''}`}>Present</th>
           </tr>
         </thead>
         <tbody>
-          {students.map(student => (
+          {sortedStudents.map(student => (
             <tr key={student.id}>
               <td>{student.id}</td>
               <td>{student.name}</td>

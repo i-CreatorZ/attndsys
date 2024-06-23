@@ -1,61 +1,106 @@
-table {
+/* Attendance.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  table {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 18px;
-    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  table, th, td {
+    border: 1px solid #ddd;
   }
   
   th, td {
-    padding: 12px 15px;
-    border: 1px solid #dddddd; /* Add border to all table cells */
-  }
-  
-  thead {
-    background-color: #009879;
-    color: #ffffff;
+    padding: 10px;
     text-align: left;
-    font-weight: bold;
-  }
-  
-  tbody tr {
-    border-bottom: 1px solid #dddddd;
-  }
-  
-  tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-  }
-  
-  tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
-  }
-  
-  input[type="checkbox"] {
-    transform: scale(1.5);
-    margin: 0 10px;
-    cursor: pointer;
   }
   
   th {
+    background-color: #f2f2f2;
     cursor: pointer;
     position: relative;
   }
   
-  th:after {
+  th::after {
     content: '↓';
     position: absolute;
     right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
   }
   
-  th.sorted-asc:after {
+  th.sort-asc::after {
     content: '↑';
   }
   
-  th.sorted-desc:after {
+  th.sort-desc::after {
     content: '↓';
   }
   
-  th.sorted-none:after {
-    content: '↓';
+  input[type="checkbox"] {
+    transform: scale(1.2);
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  label {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  input[type="date"] {
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-left: 10px;
   }
   

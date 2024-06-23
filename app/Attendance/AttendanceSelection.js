@@ -1,6 +1,7 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Attendance.css'; // Import the CSS file
 
 const AttendanceSelection = () => {
   const [date, setDate] = useState('');
@@ -12,7 +13,7 @@ const AttendanceSelection = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Select Date for Attendance</h1>
       <form onSubmit={handleSubmit}>
         <label>
