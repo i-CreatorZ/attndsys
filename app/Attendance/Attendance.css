@@ -8,6 +8,7 @@ table {
   
   th, td {
     padding: 12px 15px;
+    border: 1px solid #dddddd; /* Add border to all table cells */
   }
   
   thead {
@@ -33,5 +34,28 @@ table {
     transform: scale(1.5);
     margin: 0 10px;
     cursor: pointer;
+  }
+  
+  th {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  th:after {
+    content: '↓';
+    position: absolute;
+    right: 10px;
+  }
+  
+  th.sorted-asc:after {
+    content: '↑';
+  }
+  
+  th.sorted-desc:after {
+    content: '↓';
+  }
+  
+  th.sorted-none:after {
+    content: '↓';
   }
   

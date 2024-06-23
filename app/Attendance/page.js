@@ -5,6 +5,7 @@ import './Attendance.css'; // Import the CSS file
 
 const Attendance = () => {
   const [students, setStudents] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'ascending' });
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -40,14 +41,61 @@ const Attendance = () => {
     }
   };
 
+  const sortStudents = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+
+    const sortedStudents = [...students].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === 'ascending' ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setStudents(sortedStudents);
+    setSortConfig({ key, direction });
+  };
+
+  const getSortClass = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? 'sorted-asc' : 'sorted-desc';
+    }
+    return 'sorted-none';
+  };
+
   return (
     <table>
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Class</th>
-          <th>Present</th>
+          <th
+            onClick={() => sortStudents('id')}
+            className={getSortClass('id')}
+          >
+            ID
+          </th>
+          <th
+            onClick={() => sortStudents('name')}
+            className={getSortClass('name')}
+          >
+            Name
+          </th>
+          <th
+            onClick={() => sortStudents('class')}
+            className={getSortClass('class')}
+          >
+            Class
+          </th>
+          <th
+            onClick={() => sortStudents('present')}
+            className={getSortClass('present')}
+          >
+            Present
+          </th>
         </tr>
       </thead>
       <tbody>
