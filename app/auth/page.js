@@ -35,7 +35,6 @@ import { useState } from 'react';
 import { supabase } from "../supabase.js";
 import { useRouter } from 'next/navigation';
 
-
 export default function Login() {
   const router = useRouter();
   const [id, setid] = useState('');
@@ -62,7 +61,7 @@ export default function Login() {
     // Compare passwords
     if (data.password === password) {
       // Passwords match, redirect to home page
-      router.push('/home'); // Adjust the route as per your setup
+      router.push('/Home'); // Adjust the route as per your setup
     } else {
       throw new Error('Invalid password');
     }

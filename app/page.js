@@ -1,15 +1,13 @@
 "use client"
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AttendanceSelection from './Attendance/AttendanceSelection';
-import AttendanceManagement from './Attendance/AttendanceManagement';
+import Home from './Home/page';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AttendanceSelection />} />
-        <Route path="/manage/:date" element={<AttendanceManagement />} />
+        <Route path="/" element={<Home />}/> 
       </Routes>
     </Router>
   );
