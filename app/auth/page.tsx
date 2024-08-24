@@ -1,44 +1,24 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from "../supabase.js";
-import bcrypt from 'bcryptjs';
+import { useFormState } from "react-dom";
+import { login, getSession } from "../../action";
 
 export default function Login() {
-  const router = useRouter();
+  const router = useRouter()
+  useEffect(() =>{
+    const checkLoginStatus = async () =>{
+      const session = await getSession();
+      if (session.isLoggedIn){
+        router.push('./Marks');
+      }
+    }
+    checkLoginStatus()
+  })
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
-  const [userData, setUserData] = useState(true);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const { data, error } = await supabase
-      .from("member_info")
-      .select('id, password, type')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      console.log(error);
-      setUserData(false);
-      return;
-    }
-
-    if (data) {
-      const isPasswordCorrect = bcrypt.compareSync(password, data.password);
-      console.log(isPasswordCorrect);
-      if (isPasswordCorrect) {
-        // Passwords match, redirect to /Marks with id and type as query parameters
-        router.push(`/Marks?type=${data.type}&id=${id}`);
-        }
-       else {
-        setUserData(false);
-      }
-    } else {
-      setUserData(false);
-    }
-  };
-
+  const [state, formAction] = useFormState<any, FormData>(login, undefined);
+  
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -51,7 +31,7 @@ export default function Login() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign in to your dashboard
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#" onSubmit={handleLogin}>
+            <form className="space-y-4 md:space-y-6" action = {formAction}>
               <div>
                 <label htmlFor="id" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your ID</label>
                 <input type="id" name="id" id="id" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="D0001" value={id} required onChange={(e) => setId(e.target.value)} />
@@ -62,7 +42,7 @@ export default function Login() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-start">
-                  <p className="text-danger">{!userData ? "The ID or password is incorrect!" : ""}</p>
+                {state?.error && <p>{state.error}</p>}                
                 </div>
               </div>
               <button type="submit" className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button>

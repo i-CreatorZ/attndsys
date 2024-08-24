@@ -1,11 +1,10 @@
 
 "use client"
-import React, { useInsertionEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'
 import {supabase} from '../supabase.js'
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link'
-import { markAssetError } from 'next/dist/client/route-loader.js';
+import {getSession} from "../../action"
 
 export function Form({database, type, type2,type3}) {
     const [com_name, setName] = useState('')
@@ -34,19 +33,17 @@ export function Form({database, type, type2,type3}) {
           setSubmit(true)
           const {data: data2, error: error2} = await supabase
           .from("member_info")
-          .select("merit")
+          .select("marks")
           .eq("id",id)
           .single()
-          //console.log("data2" + data2 + " id: " + id)
         if (data2){
-          const originalMark = data2.merit
-          console.log("originalMark: " + typeof originalMark + " mark: " + typeof mark)
+          const originalMark = data2.marks
+          //console.log("originalMark: " + typeof originalMark + " mark: " + typeof mark)
           let newMark = 0;
           {type3 === "+" ? newMark = (originalMark + mark): newMark = originalMark - mark}
-          //console.log("original mark: " + originalMark)
           const {data:data3, data:error3} = await supabase
             .from("member_info")
-            .update({'merit': newMark})
+            .update({'marks': newMark})
             .eq("id", id)
             .select()
           if (error3){
@@ -142,5 +139,33 @@ export function Form({database, type, type2,type3}) {
     )}
 
   export default function Layout(){
-    return(<Form database = "merit_records" type = "Merit" type2 = "Added" type3 = "+"></Form>)
+    const [html, setHtml] = useState(null)
+    useEffect(() =>{
+      const checkUserIsAdmin = async () =>{
+        const session = await getSession()
+        if (session.type !== "Admin"){
+          setHtml(
+            <>
+            <h1>You are not authorized to access this page or your session has expired.</h1>
+            </>
+          )
+        }
+        else{
+          setHtml(
+            <>
+            <Form database = "merit_records" type = "Merit" type2 = "Added" type3 = "+"></Form>
+            </>
+          )
+        }
+      }
+      checkUserIsAdmin()
+
+      const intervalId = setInterval(() => {
+        checkUserIsAdmin();  // Periodic session check
+      }, 1000 * 60 * 5);  // Check every 5 minutes
+    
+      return () => clearInterval(intervalId);  // Cleanup interval on component unmount
+    },[setHtml]
+  )
+    return(html)
   }

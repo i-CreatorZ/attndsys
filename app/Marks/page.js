@@ -4,31 +4,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabase.js';
-import { useSearchParams } from 'next/navigation';
-
+import { getSession } from "../../action";
 
 function UserType() {
-  const router = useRouter()
   const [member_Details, setDetails] = useState([]);
-  const searchParams = useSearchParams()
-  const id = searchParams.get('id')
-  const type = searchParams.get('type')
-  console.log("type: ", type)
-  console.log("id: ", id)
+
   useEffect(() => {
     const fetchMemberData = async () => {
-      if (type === 'User') {
-        const { data, error } = await supabase
-          .from("member_info")
-          .select()
-          .eq("id", id)
-          .single();
-
-        if (error) {
-          console.log("Member marks error: " + error);
-        } else if (data) {
-          setDetails(data);
-        }
+      const session = await getSession()     
+      if (session.type === 'User') {
+         setDetails(session)
       } else {
         const fetchAllMemberData = async () => {
           const { data, error } = await supabase
@@ -45,15 +30,15 @@ function UserType() {
       }
     };
     fetchMemberData();
-  }, [id, type]);
+  }, [setDetails]);
 
-  if (type === 'User') {
+  if (member_Details.type === 'User') {
     return (
-      <tr key={member_Details.id}>
-        <td>{member_Details.id}</td>
-        <td>{member_Details.name}</td>
+      <tr key={member_Details.userId}>
+        <td>{member_Details.userId}</td>
+        <td>{member_Details.username}</td>
         <td>{member_Details.class}</td>
-        <td>{member_Details.merit}</td>
+        <td>{member_Details.marks}</td>
       </tr>
     );
   } else {
@@ -62,7 +47,7 @@ function UserType() {
         <td>{person.id}</td>
         <td>{person.name}</td>
         <td>{person.class}</td>
-        <td>{person.merit}</td>
+        <td>{person.marks}</td>
         <td>
           <Link
             href={{
@@ -92,15 +77,14 @@ function UserType() {
 function Records({ database }) {
   const [records, setRecords] = useState([]);
   const [fetchError, setFetchError] = useState(null);
-  const searchParams = useSearchParams()
-  const id = searchParams.get('id')
 
   useEffect(() => {
     const fetchRecords = async () => {
+      const session = await getSession();
       const { data, error } = await supabase
         .from(database)
         .select()
-        .eq('school_num', id);
+        .eq('school_num', session.userId);
 
       if (error) {
         console.error("Error fetching records:", error);
@@ -112,7 +96,7 @@ function Records({ database }) {
       }
     };
     fetchRecords();
-  }, [id, database]);
+  },[database, setFetchError, setRecords]);
 
   const recordList = records.map(record => (
     <tr key={record.id}>
@@ -126,63 +110,95 @@ function Records({ database }) {
 }
 
 function ShowRecord() {
-  const searchParams = useSearchParams()
-  const type = searchParams.get('type')
-
-  return (
-    type === 'User' && (
-      <div>
-        <h2 className="flex justify-center">Demerit Records</h2>
-        <table className="table-auto border-separate border-spacing-x-5">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Reason</th>
-              <th>Marks Deducted</th>
-            </tr>
-          </thead>
-          <tbody>
-            <Records database="demerit_records" />
-          </tbody>
-        </table>
-        <h2 className="flex justify-center mt-10">Merit Records</h2>
-        <table className="table-auto border-separate border-spacing-x-5">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Reason</th>
-              <th>Marks Added</th>
-            </tr>
-          </thead>
-          <tbody>
-            <Records database="merit_records" />
-          </tbody>
-        </table>
-      </div>
-    )
-  );
-}
+  const [htmlReturn, setReturn] = useState(null)
+  useEffect(() => {
+    const showrecord = async () =>{
+      const session = await getSession();
+      console.log(session.type)
+       if  (session.type === 'User' ){
+        return(
+          <div>
+            <h2 className="flex justify-center">Demerit Records</h2>
+            <table className="table-auto border-separate border-spacing-x-5">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Reason</th>
+                  <th>Marks Deducted</th>
+                </tr>
+              </thead>
+              <tbody>
+                <Records database="demerit_records" />
+              </tbody>
+            </table>
+            <h2 className="flex justify-center mt-10">Merit Records</h2>
+            <table className="table-auto border-separate border-spacing-x-5">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Reason</th>
+                  <th>Marks Added</th>
+                </tr>
+              </thead>
+              <tbody>
+                <Records database="merit_records" />
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+    }
+    setReturn(showrecord())
+    }, [setReturn])
+    return htmlReturn
+  }
 
 export default function Marks() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <table className="table-auto border-separate border-spacing-x-5">
-        <thead>
-          <tr>
-            <th>School Number</th>
-            <th>Name</th>
-            <th>Class</th>
-            <th>Marks</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <UserType />
-        </tbody>
-      </table>
-      <ShowRecord />
-    </main>
-  );
+  const [html, setLayout] = useState(null)
+  useEffect(() =>{
+    const checkLoginStatus = async () =>{
+      const session = await getSession();
+      if (!session.isLoggedIn){
+        setLayout(
+          <>
+          <h1>
+            You are either not logged in or your session has expired!
+          </h1>
+          <Link href = "/auth">Log in</Link>
+          </>
+        )
+      }
+      else{
+        setLayout(
+          <main className="flex min-h-screen flex-col items-center justify-between p-24">
+          <table className="table-auto border-separate border-spacing-x-5">
+            <thead>
+              <tr>
+                <th>School Number</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Marks</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <UserType />
+            </tbody>
+          </table>
+          <ShowRecord />
+        </main>
+        )
+      }
+    }
+    checkLoginStatus()
+
+    const intervalId = setInterval(() => {
+      checkLoginStatus();  // Periodic session check
+    }, 1000 * 60 * 5);  // Check every 5 minutes
+  
+    return () => clearInterval(intervalId);  // Cleanup interval on component unmount
+  }, [setLayout])
+  return (html);
 }
 

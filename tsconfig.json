@@ -27,7 +27,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "app/lib/actions.ts", "middleware.js", "app/auth/page.js"  ],
+, "app/lib/actions.ts", "middleware.js", "app/auth/page.tsx", "action.ts", "lib.ts"  ],
   "exclude": [
     "node_modules"
   ]
