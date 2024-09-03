@@ -1,14 +1,9 @@
 "use client"
 import { useState } from "react";
-import { supabase } from "../supabase.js";
-import {useRouter} from "next/navigation"
-import bcrypt from 'bcryptjs'
 import { useFormState } from "react-dom";
 import {signup} from "../../action"
 
 export default function Signup() {
-  const [userExistData, setUserExist] = useState(false)
-  const [passCorrect, setPassCorrect] = useState(true)
   const [state, formAction] = useFormState<any, FormData>(signup, undefined);
   return (
  <section className="bg-gray-50 dark:bg-gray-900">

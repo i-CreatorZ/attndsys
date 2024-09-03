@@ -14,11 +14,12 @@ export default function ChangePass() {
     const [isLoggedIn, setIsLoggedIn] = useState(null)
     const router = useRouter()
 
+    //handle change password submission
     const handleSubmit = async (e) => {
         e.preventDefault()
         const session = await getSession()
-        console.log("sessionuserId: ", session.userId)
-        console.log(oldPass)
+        //console.log("sessionuserId: ", session.userId)
+        //console.log(oldPass)
         const { data: data1, error: error1 } = await supabase
             .from("member_info")
             .select()
@@ -28,6 +29,7 @@ export default function ChangePass() {
         if (data1) {
             console.log("Successfully fetched database data")
             const oldPasswordCorrect = await bcrypt.compare(oldPass, data1.password)
+            // If old password and new password correct, update user password in hashed text in supabase
             if (oldPasswordCorrect) {
                 if (newPass === confirmNewPass) {
                     const hashPass = await bcrypt.hash(newPass, 10);
@@ -54,6 +56,7 @@ export default function ChangePass() {
     }
 
     useEffect(() => {
+        //Check if user is logged in
         const checkLoginStatus = async () => {
             const session = await getSession();
             if (!session.isLoggedIn) {
@@ -72,7 +75,6 @@ export default function ChangePass() {
     }, [])
 
     if (isLoggedIn === null) {
-        // You can show a loading spinner here while checking login status
         return <p>Loading...</p>
     }
 

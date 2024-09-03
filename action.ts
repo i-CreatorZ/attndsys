@@ -53,7 +53,7 @@ else if (!data){
   return { error: "Wrong ID!" };
 }
 if (error){
-  console.log("Error: " + error)
+  return {error: "An error has occured"}
 }
 };
 

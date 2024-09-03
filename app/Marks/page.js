@@ -1,12 +1,15 @@
 'use client'
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabase.js';
 import { getSession } from "../../action";
 
 function UserType() {
+  //Function to determine user type: Member or Admin.
+  //If admin, return a react state with html elements, shows details of every single member
+  //If user, return react state with html elements, show details of that particular member
+
   const [member_Details, setDetails] = useState([]);
 
   useEffect(() => {
@@ -77,6 +80,8 @@ function UserType() {
 function Records({ database }) {
   const [records, setRecords] = useState([]);
   const [fetchError, setFetchError] = useState(null);
+  
+  //return react state with html elements showing merit/demerit records
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -111,10 +116,12 @@ function Records({ database }) {
 
 function ShowRecord() {
   const [htmlReturn, setReturn] = useState(null)
+  
+  //return both merit & demerit records if user is member
   useEffect(() => {
     const showrecord = async () =>{
       const session = await getSession();
-      console.log(session.type)
+      //console.log(session.type)
        if  (session.type === 'User' ){
         return(
           <div>
@@ -154,6 +161,8 @@ function ShowRecord() {
   }
 
 export default function Marks() {
+  //combine all functions to show full layout
+  
   const [html, setLayout] = useState(null)
   useEffect(() =>{
     const checkLoginStatus = async () =>{

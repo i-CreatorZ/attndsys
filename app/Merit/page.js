@@ -17,6 +17,7 @@ export function Form({database, type, type2,type3}) {
     const name = searchParams.get('name')
     const router = useRouter()
     console.log("id: " + id + " name: " + name)
+    //Handle form submission
     const handleSubmit = async (e) =>{
       e.preventDefault()
 
